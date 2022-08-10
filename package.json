@@ -1,0 +1,15 @@
+{
+  "name": "sfdx-delete-flow-versions",
+  "version": "1.0.0",
+  "description": "Node JS CLI app that deletes Inactive Flows from a target Salesforce environment.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src"
+  },
+  "author": "Justin Lyon",
+  "license": "BSD-3-CLAUSE",
+  "dependencies": {
+    "minimist": "^1.2.6",
+    "sfdx-cli": "^7.162.0"
+  }
+}
