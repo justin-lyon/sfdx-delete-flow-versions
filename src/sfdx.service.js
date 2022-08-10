@@ -51,7 +51,7 @@ const queryObsoleteFlows = () => {
 };
 
 const deleteFlow = (flowId) => {
-  const cmd = `npx sfdx force:data:record:delete -u ${username} -s Flow -i ${flowId} --usetoolingapi --checkonly=${checkonly}`;
+  const cmd = `npx sfdx force:data:record:delete -u ${username} -s Flow -i ${flowId} --usetoolingapi`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject));
 };
 
