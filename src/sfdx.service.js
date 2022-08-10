@@ -14,7 +14,6 @@ const execute = (cmd, resolve, reject) => {
   });
 };
 
-// Provide a default username, or
 const login = () => {
   if (!username) {
     const message = `username is required`;
