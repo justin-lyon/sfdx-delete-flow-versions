@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const filename = 'obsolete-flows.json';
 const folder = path.join(__dirname, '..', 'data');
-const filepath = path.join(folder, filename);
 
 const mkdir = () => {
   return new Promise((resolve, reject) => {
@@ -16,7 +14,9 @@ const mkdir = () => {
   });
 }
 
-const writeJson = (data) => {
+const writeJson = (filename, data) => {
+  const filepath = path.join(folder, filename);
+
   return new Promise((resolve, reject) => {
     fs.writeFile(filepath, JSON.stringify(data, null, 2), err => {
       if (err) reject(err);
@@ -26,11 +26,6 @@ const writeJson = (data) => {
   });
 };
 
-const writeFlows = (flows) => {
-  return mkdir()
-    .then(() => writeJson(flows));
-};
-
 module.exports = {
-  writeFlows
+  writeJson
 };

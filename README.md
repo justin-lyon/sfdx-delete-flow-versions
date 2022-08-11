@@ -1,6 +1,12 @@
 # sfdx-delete-flow-versions
 
-Node JS CLI app that deletes Inactive Flows from a target Salesforce environment. Flows for each execution are stored in `data/obsolete-flows.json`.
+Node JS CLI app that deletes Inactive Flows from a target Salesforce environment. Flows for each execution are stored in `data/`. Execute Check Only to get the counts and file read outs.
+
+| | filename | description |
+|---|---|---|
+| 1 | at-risk-flows.json | Flows or PBs that do NOT have an Active version. They will be completely deleted. |
+| 2 | flows-by-status.json | Count Flows by Name & Status |
+| 3 | inactive-flows.json | All Flows in this list are deleted. |
 
 # setup
 

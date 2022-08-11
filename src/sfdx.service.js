@@ -1,5 +1,7 @@
 const { exec } = require('child_process');
 const { username } = require('./config');
+const xformFlow = require('./flow.xform');
+const xformAgg = require('./flow-agg.xform');
 
 const execute = (cmd, resolve, reject) => {
   const process = exec(cmd, (error, stdout, stderr) => {
@@ -36,17 +38,31 @@ const login = () => {
   }
 };
 
-const queryObsoleteFlows = () => {
+const queryFlowsByNameAndStatus = () => {
+  const query = `
+    SELECT Definition.DeveloperName, Status, COUNT(Id)
+    FROM Flow
+    GROUP BY Definition.DeveloperName, Status
+    ORDER BY Definition.DeveloperName `;
+  const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
+  return new Promise((resolve, reject) => execute(cmd, resolve, reject))
+    .then(stdout => {
+      const queryResult = JSON.parse(stdout);
+      return queryResult.result.records.map(xformAgg);
+    });
+};
+
+const queryInactiveFlows = () => {
   const query = `
     SELECT Definition.DeveloperName, VersionNumber, Id, Status
     FROM Flow
-    WHERE Status = 'Obsolete'
+    WHERE Status IN ('Obsolete', 'Draft')
     ORDER BY Definition.DeveloperName, VersionNumber`;
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
       const queryResult = JSON.parse(stdout);
-      return queryResult.result.records;
+      return queryResult.result.records.map(xformFlow);
     });
 };
 
@@ -57,6 +73,7 @@ const deleteFlow = (flowId) => {
 
 module.exports = {
   login,
-  queryObsoleteFlows,
+  queryFlowsByNameAndStatus,
+  queryInactiveFlows,
   deleteFlow
 }
