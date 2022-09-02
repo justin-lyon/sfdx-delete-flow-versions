@@ -39,11 +39,12 @@ const login = () => {
 };
 
 const queryFlowsByNameAndStatus = () => {
-  const query = `
-    SELECT Definition.DeveloperName, Status, COUNT(Id)
-    FROM Flow
-    GROUP BY Definition.DeveloperName, Status
-    ORDER BY Definition.DeveloperName `;
+  //windows will choke if the query string has line breaks. we can preserve readability here with dumb workarounds.
+  const query = 
+    `SELECT Definition.DeveloperName, Status, COUNT(Id) ` +
+    `FROM Flow ` +
+    `GROUP BY Definition.DeveloperName, Status ` +
+    `ORDER BY Definition.DeveloperName`;
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
@@ -53,11 +54,12 @@ const queryFlowsByNameAndStatus = () => {
 };
 
 const queryInactiveFlows = () => {
-  const query = `
-    SELECT Definition.DeveloperName, VersionNumber, Id, Status
-    FROM Flow
-    WHERE Status IN ('Obsolete', 'Draft')
-    ORDER BY Definition.DeveloperName, VersionNumber`;
+  //windows will choke if the query string has line breaks. we can preserve readability here with dumb workarounds.
+  const query = 
+    `SELECT Definition.DeveloperName, VersionNumber, Id, Status ` +
+    `FROM Flow ` +
+    `WHERE Status IN ('Obsolete', 'Draft') ` +
+    `ORDER BY Definition.DeveloperName, VersionNumber`;
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
