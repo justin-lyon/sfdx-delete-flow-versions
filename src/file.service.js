@@ -27,5 +27,6 @@ const writeJson = (filename, data) => {
 };
 
 module.exports = {
+  mkdir,
   writeJson
 };

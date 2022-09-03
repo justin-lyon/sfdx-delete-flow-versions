@@ -1,5 +1,5 @@
 const sfdx = require('./sfdx.service');
-const { writeJson } = require('./file.service');
+const { mkdir, writeJson } = require('./file.service');
 const { checkonly } = require('./config');
 
 const deleteAllObsoleteFlows = async (flowIds) => {
@@ -35,7 +35,12 @@ const findAtRiskFlows = aggResults => {
   return [...new Set(aggResults.filter(f => summary[f.name].active === 0).map(f => f.name))]
 };
 
-sfdx.login()
+const init = () => {
+  return mkdir();
+}
+
+init()
+  .then(sfdx.login)
   .then(sfdx.queryFlowsByNameAndStatus)
   .then(flowCountsByStatus => {
     console.info('flowCountsByStatus count', flowCountsByStatus.length);
