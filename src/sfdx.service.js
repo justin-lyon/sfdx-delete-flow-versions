@@ -39,11 +39,12 @@ const login = () => {
 };
 
 const queryFlowsByNameAndStatus = () => {
-  const query = `
+  const queryLines = `
     SELECT Definition.DeveloperName, Status, COUNT(Id)
     FROM Flow
     GROUP BY Definition.DeveloperName, Status
     ORDER BY Definition.DeveloperName `;
+  const query = queryLines.split('\n').map(line => line.trim()).join(' ');
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
@@ -53,11 +54,12 @@ const queryFlowsByNameAndStatus = () => {
 };
 
 const queryInactiveFlows = () => {
-  const query = `
+  const queryLines = `
     SELECT Definition.DeveloperName, VersionNumber, Id, Status
     FROM Flow
     WHERE Status IN ('Obsolete', 'Draft')
     ORDER BY Definition.DeveloperName, VersionNumber`;
+  const query = queryLines.split('\n').map(line => line.trim()).join(' ');
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
