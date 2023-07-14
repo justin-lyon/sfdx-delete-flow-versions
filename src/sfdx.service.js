@@ -42,6 +42,7 @@ const queryFlowsByNameAndStatus = () => {
   const queryLines = `
     SELECT Definition.DeveloperName, Status, COUNT(Id)
     FROM Flow
+	WHERE DefinitionId IN (SELECT Id FROM FlowDefinition WHERE NamespacePrefix = NULL)
     GROUP BY Definition.DeveloperName, Status
     ORDER BY Definition.DeveloperName `;
   const query = queryLines.split('\n').map(line => line.trim()).join(' ');
@@ -57,7 +58,7 @@ const queryInactiveFlows = () => {
   const queryLines = `
     SELECT Definition.DeveloperName, VersionNumber, Id, Status
     FROM Flow
-    WHERE Status IN ('Obsolete', 'Draft')
+    WHERE Status IN ('Obsolete', 'Draft') AND DefinitionId IN (SELECT ID FROM FlowDefinition WHERE NamespacePrefix = NULL)
     ORDER BY Definition.DeveloperName, VersionNumber`;
   const query = queryLines.split('\n').map(line => line.trim()).join(' ');
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
