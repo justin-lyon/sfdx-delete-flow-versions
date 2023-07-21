@@ -1,5 +1,5 @@
 const { exec } = require('child_process');
-const { username } = require('./config');
+const { username, includeManaged } = require('./config');
 const xformFlow = require('./flow.xform');
 const xformAgg = require('./flow-agg.xform');
 
@@ -39,16 +39,29 @@ const login = () => {
 };
 
 const queryFlowsByNameAndStatus = () => {
-  const queryLines = `
+  const simpleQuery = `
     SELECT Definition.DeveloperName, Status, COUNT(Id)
     FROM Flow
+  `;
+  const excludeManagedCondition = `
     WHERE DefinitionId IN (
       SELECT Id
       FROM FlowDefinition
       WHERE NamespacePrefix = NULL
     )
+  `;
+  const grouping = `
     GROUP BY Definition.DeveloperName, Status
-    ORDER BY Definition.DeveloperName `;
+    ORDER BY Definition.DeveloperName
+  `;
+
+  const queryBlocks = [simpleQuery];
+  if (includeManaged) {
+    queryBlocks.push(excludeManagedCondition);
+  }
+  queryBlocks.push(grouping);
+
+  const queryLines = queryBlocks.join(' ');
   const query = queryLines.split('\n').map(line => line.trim()).join(' ');
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
@@ -59,16 +72,27 @@ const queryFlowsByNameAndStatus = () => {
 };
 
 const queryInactiveFlows = () => {
-  const queryLines = `
-    SELECT Definition.DeveloperName, VersionNumber, Id, Status
-    FROM Flow
-    WHERE Status IN ('Obsolete', 'Draft')
-      AND DefinitionId IN (
-        SELECT Id
-        FROM FlowDefinition
-        WHERE NamespacePrefix = NULL
-      )
-    ORDER BY Definition.DeveloperName, VersionNumber`;
+
+  const simpleQuery = `
+  SELECT Definition.DeveloperName, VersionNumber, Id, Status
+  FROM Flow
+  WHERE Status IN ('Obsolete', 'Draft')
+  `;
+  const excludeManagedCondition = `
+    AND DefinitionId IN (
+      SELECT Id
+      FROM FlowDefinition
+      WHERE NamespacePrefix = NULL
+    )
+  `;
+  const orderBy = `ORDER BY Definition.DeveloperName, VersionNumber`;
+  const queryBlocks = [simpleQuery];
+  if (includeManaged) {
+    queryBlocks.push(excludeManagedCondition);
+  }
+  queryBlocks.push(orderBy);
+
+  const queryLines = queryBlocks.join(' ');
   const query = queryLines.split('\n').map(line => line.trim()).join(' ');
   const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
