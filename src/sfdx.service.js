@@ -56,7 +56,7 @@ const queryFlowsByNameAndStatus = () => {
   `;
 
   const queryBlocks = [simpleQuery];
-  if (includeManaged) {
+  if (!includeManaged) {
     queryBlocks.push(excludeManagedCondition);
   }
   queryBlocks.push(grouping);
@@ -87,7 +87,7 @@ const queryInactiveFlows = () => {
   `;
   const orderBy = `ORDER BY Definition.DeveloperName, VersionNumber`;
   const queryBlocks = [simpleQuery];
-  if (includeManaged) {
+  if (!includeManaged) {
     queryBlocks.push(excludeManagedCondition);
   }
   queryBlocks.push(orderBy);
