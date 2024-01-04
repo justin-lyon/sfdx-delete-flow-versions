@@ -24,7 +24,7 @@ const login = () => {
 
   if (username) {
     console.info('Username received. Searching local force:org:list for: ', username);
-    const cmd = `npx sfdx force:org:list | grep ${username}`
+    const cmd = `npx sf org list | grep ${username}`
     return new Promise((resolve, reject) => execute(cmd, resolve, reject))
       .then(() => {
         console.info('Username confirmed. Proceeding...');
@@ -63,7 +63,7 @@ const queryFlowsByNameAndStatus = () => {
 
   const queryLines = queryBlocks.join(' ');
   const query = queryLines.split('\n').map(line => line.trim()).join(' ');
-  const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
+  const cmd = `npx sf data query -o ${username} -q "${query}" --usetoolingapi -r json -w 10`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
       const queryResult = JSON.parse(stdout);
@@ -76,7 +76,7 @@ const queryInactiveFlows = () => {
   const simpleQuery = `
   SELECT Definition.DeveloperName, VersionNumber, Id, Status
   FROM Flow
-  WHERE Status IN ('Obsolete', 'Draft')
+  WHERE Status IN ('Obsolete', 'Draft', 'InvalidDraft')
   `;
   const excludeManagedCondition = `
     AND DefinitionId IN (
@@ -94,7 +94,7 @@ const queryInactiveFlows = () => {
 
   const queryLines = queryBlocks.join(' ');
   const query = queryLines.split('\n').map(line => line.trim()).join(' ');
-  const cmd = `npx sfdx force:data:soql:query -u ${username} -q "${query}" --usetoolingapi -r json`;
+  const cmd = `npx sf data query -o ${username} -q "${query}" --usetoolingapi -r json -w 10`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject))
     .then(stdout => {
       const queryResult = JSON.parse(stdout);
@@ -103,7 +103,7 @@ const queryInactiveFlows = () => {
 };
 
 const deleteFlow = (flowId) => {
-  const cmd = `npx sfdx force:data:record:delete -u ${username} -s Flow -i ${flowId} --usetoolingapi`;
+  const cmd = `npx sf data delete record -o ${username} -s Flow -i ${flowId} --usetoolingapi`;
   return new Promise((resolve, reject) => execute(cmd, resolve, reject));
 };
 
