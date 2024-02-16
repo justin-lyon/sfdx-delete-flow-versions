@@ -7,6 +7,7 @@ Node JS CLI app that deletes Inactive Flows from a target Salesforce environment
 | 1 | at-risk-flows.json | Flows or PBs that do NOT have an Active version. They will be completely deleted. |
 | 2 | flows-by-status.json | Count Flows by Name & Status |
 | 3 | inactive-flows.json | All Flows in this list are deleted. |
+| 4 | flow-interviews.json | Flow Interviews to be deleted. This tool only deletes interviews of inactive flows. |
 
 # setup
 
