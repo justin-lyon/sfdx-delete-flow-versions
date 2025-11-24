@@ -108,7 +108,7 @@ const queryInterviewsByFlowVersion = flowVersionIds => {
   const simpleQuery = `
   SELECT Id, FlowVersionViewId
   FROM FlowInterview
-  LIMIT 2
+  WHERE FlowVersionViewId IN ('${flowVersionIds.join('\',\'')}')
   `;
 
   const query = simpleQuery.split('\n').map(line => line.trim()).join(' ');

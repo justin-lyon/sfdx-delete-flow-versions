@@ -28,6 +28,7 @@ npm start -- --username=targetenvusername --checkonly
 |---|---|---|---|
 | 1 | -u, --username | Yes | The sfdx username for the target environment. It should be visible locally on your machine using `sfdx force:org:list` |
 | 2 | -c, --checkonly | No | Get a list of all obsolete Flows without deleting them. |
+| 3 | -m, --include-managed | No | Default FALSE, include flows that belong to namespaces. |
 
 # sample stdout
 
